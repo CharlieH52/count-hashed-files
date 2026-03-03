@@ -1,0 +1,21 @@
+[project]
+name = "count_hashed_files"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "CharlieH52",email = "carlos.gomez.h52@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "flet (>=0.81.0,<0.82.0)"
+]
+
+[tool.poetry]
+packages = [
+    { include = "count_hashed_files", from = "src" }
+]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
