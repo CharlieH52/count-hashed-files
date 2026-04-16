@@ -7,7 +7,7 @@ class Interface:
         page.window.maximizable = False
         page.window.resizable = False
         page.window.shadow = False
-        page.window.width = 300
+        page.window.width = 600
         page.window.height = 300
         page.title = "Certificador de archivos"
 
@@ -19,34 +19,43 @@ class Interface:
         
 
         def certify_task(e: ft.Event[ft.Button]):
-            CertifyMaker(input_path.value, input_fileName.value).orquestar()
+            data = CertifyMaker(input_path.value, input_fileName.value).orquestar()
 
         input_path = create_inputField()
         input_fileName = create_inputField()
-        make_button = ft.Button(content="Certificar", on_click=certify_task)
+        make_button = ft.Button(content="Certificar", style=ft.ButtonStyle(shape=ft.BeveledRectangleBorder()), on_click=certify_task)
         label_path = create_label("Direccion raiz:")
         label_fileName = create_label("Nombre del archivo:")
-        
+        extension_list = ft.ListView()
 
         make_button.on_click
 
         page.add(
             ft.Column(
-                alignment=ft.MainAxisAlignment.CENTER,
                 controls=[
-                    ft.Column(
+                    ft.Text(value="Certificacion en progreso:"),
+                    ft.Row(
                         controls=[
-                            label_path,
-                            input_path
+                            ft.Column(
+                                alignment=ft.MainAxisAlignment.CENTER,
+                                controls=[
+                                    ft.Column(
+                                        controls=[
+                                            label_path,
+                                            input_path
+                                        ]
+                                    ),
+                                    ft.Column(
+                                        controls=[
+                                            label_fileName,
+                                            input_fileName
+                                        ]
+                                    ),
+                                    make_button
+                                ]
+                            )
                         ]
-                    ),
-                    ft.Column(
-                        controls=[
-                            label_fileName,
-                            input_fileName
-                        ]
-                    ),
-                    make_button
+                    )
                 ]
             )
         )
