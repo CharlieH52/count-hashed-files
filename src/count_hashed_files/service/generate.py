@@ -18,19 +18,22 @@ class CertifyMaker:
         except:
             return ""
 
-    def __save_json_file(self, data: str, file_name: str) -> None:
+    def __save_json_file(self, data: list[dict[str,str]], file_name: str) -> None:
         output_file_name = file_name
-        json_data = json.loads(data)
         try:
             with open(output_file_name, "w", encoding="utf-8") as file:
-                json.dump(json_data, file, indent=4)
+                json.dump(data, file, indent=4)
         except PermissionError:
             pass
 
     def __load_json_file(self, file_path: str) -> list[dict[str,str]]:
         try:
             with open(file_path, "r", encoding="utf-8") as file:
-                return json.load(file)
+                output = json.load(file)
+                if isinstance(output, list):
+                    return output
+                else:
+                    return [output]
         except Exception as e:
             print(e)
 
@@ -48,6 +51,7 @@ class CertifyMaker:
                 extension = match.group(1)
                 conteos[extension] += 1
                 total += 1
+
         print(f"Archivos totales: {total}")
 
         return [
@@ -57,9 +61,8 @@ class CertifyMaker:
 
     def orquestar(self):
         file_name = os.path.join(self.working_path, f"{self.output_name}.json")
-        output_json = self.__execute_process()
-        self.__save_json_file(output_json, file_name)
         data = self.__load_json_file(file_name)
+        self.__save_json_file(data, file_name)
         count = self.__get_file_extension_list(data)
         for item in count:
             print(f'Extension de archivo: {item.get("extension")} = {item.get("conteo")}')
