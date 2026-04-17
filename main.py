@@ -1,5 +1,5 @@
 import flet as ft
-from count_hashed_files.view.interface import Interface
+from view.interface import Interface
 
 mv = Interface()
 

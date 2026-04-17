@@ -12,9 +12,7 @@ dependencies = [
 ]
 
 [tool.poetry]
-packages = [
-    { include = "count_hashed_files", from = "src" }
-]
+package-mode=false
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
