@@ -7,7 +7,7 @@ from collections import defaultdict
 
 class CertifyMaker:
     def __init__(self, target_path: str, output_file_name: str) -> None:
-        self.working_path = os.getcwd()
+        self.working_path = os.path.join(os.getcwd(), "Certificaciones")
         self.path = target_path
         self.output_name = output_file_name
 
@@ -70,11 +70,10 @@ class CertifyMaker:
             for ext, count in conteos.items()
         ]
 
-    def orquestar(self):
+    def process(self) -> list[dict[str,Any]]:
         file_name = os.path.join(self.working_path, f"{self.output_name}.json")
         output_json = self.__execute_process()
         self.__save_json_file(output_json, file_name)
         data = self.__load_json_file(file_name)
         count = self.__get_file_extension_list(data)
-        for item in count:
-            print(f'Extension de archivo: {item.get("extension")} = {item.get("conteo")}')
+        return count

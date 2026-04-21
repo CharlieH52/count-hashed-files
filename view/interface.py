@@ -18,7 +18,12 @@ class Interface:
             return ft.Text(value=label_text, size=font_size)
 
         def certify_task(e: ft.Event[ft.Button]):
-            CertifyMaker(input_path.value, input_fileName.value).orquestar()
+            extension_list.controls=[]
+            result = CertifyMaker(input_path.value, input_fileName.value).process()
+            for item in result:
+                ext = str(item.get("extension")).upper()
+                inc_item = f"{ext } = {item.get("conteo")}"
+                extension_list.controls.append(ft.Text(inc_item))
 
         def clean_components(e: ft.Event[ft.Button]):
             state_totalStorage.value="-"
@@ -43,14 +48,10 @@ class Interface:
         state_usedStorage = create_label("-", font_size=18)
         label_freeStorage = create_label("Espacio Disponible:", font_size=16)
         state_freeStorage = create_label("-", font_size=18)
-        label_extensionList = create_label("Lista de archivos y extensiones:", font_size=16)
+        label_extensionList = create_label("Lista de archivos y extensiones:", font_label)
         extension_list = ft.ListView(
-            height=300,
-            controls=[
-                ft.Text("Alguna ocurrencia de ejemplo..."),
-                ft.Text("Alguna ocurrencia de ejemplo..."),
-                ft.Text("Alguna ocurrencia de ejemplo...")
-            ]
+            height=200,
+            controls=[]
         )
 
         make_button.on_click
@@ -130,7 +131,7 @@ class Interface:
                                                 label_extensionList,
                                                 ft.Container(
                                                     content=extension_list,
-                                                    border=ft.Border.all(1, ft.Colors.RED),
+                                                    border=ft.Border.all(1, ft.Colors.BLACK),
                                                     expand=True,
                                                     padding=16
                                                 )
