@@ -33,20 +33,30 @@ class Interface:
             input_fileName.value=""
             extension_list.controls=[]
 
+        # Global Variables
+        font_label = 16
+
+        # Status Column
+        label_status = create_label("Estado actual:", font_label)
+        status_field = ft.ListView(
+            height=72,
+            controls=[]
+        )
+
         # Input Column
-        label_path = create_label("Direccion raiz:", font_size=16)
+        label_path = create_label("Direccion raiz:", font_label)
         input_path = create_inputField(text_prev="G:/")
-        label_fileName = create_label("Nombre de salida:", font_size=16)
+        label_fileName = create_label("Nombre de salida:", font_label)
         input_fileName = create_inputField(text_prev="CERTIFICACION-16_04_25")
         make_button = ft.Button(content="Certificar", style=ft.ButtonStyle(shape=ft.BeveledRectangleBorder()), on_click=certify_task)
         clean_button = ft.Button(content="Limpiar", style=ft.ButtonStyle(shape=ft.BeveledRectangleBorder()), on_click=clean_components)
 
         # Output Column
-        label_totalStorage = create_label("Espacio Total:", font_size=16)
+        label_totalStorage = create_label("Espacio Total:", font_label)
         state_totalStorage = create_label("-", font_size=18)
-        label_usedStorage = create_label("Espacio Utilizado:", font_size=16)
+        label_usedStorage = create_label("Espacio Utilizado:", font_label)
         state_usedStorage = create_label("-", font_size=18)
-        label_freeStorage = create_label("Espacio Disponible:", font_size=16)
+        label_freeStorage = create_label("Espacio Disponible:", font_label)
         state_freeStorage = create_label("-", font_size=18)
         label_extensionList = create_label("Lista de archivos y extensiones:", font_label)
         extension_list = ft.ListView(
