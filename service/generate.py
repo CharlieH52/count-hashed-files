@@ -51,7 +51,6 @@ class CertifyMaker:
     def __get_file_extension_list(self, json_data: list[dict[str,str]]) -> list[dict[str, int]]:
         data_file = json_data
         conteos = defaultdict(int)
-        total = 0
         for file in data_file:
             path = file.get("Path")
             if not path:
@@ -61,9 +60,6 @@ class CertifyMaker:
             if match:
                 extension = match.group(1)
                 conteos[extension] += 1
-                total += 1
-
-        print(f"Archivos totales: {total}")
 
         return [
             {"extension": ext, "conteo": count}
