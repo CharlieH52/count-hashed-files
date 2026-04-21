@@ -1,4 +1,5 @@
 from service.generate import CertifyMaker
+from typing import Any
 import flet as ft
 
 class Interface:
@@ -17,13 +18,16 @@ class Interface:
         def create_label(label_text: str, font_size: int) -> ft.Text:
             return ft.Text(value=label_text, size=font_size)
 
+        def __get_file_list(file_list_obj: list[dict[str,Any]]):
+            for item in file_list_obj:
+                ext = str(item.get("extension")).upper()
+                inc_item = f"{ext} = {item.get("conteo")}"
+                extension_list.controls.append(ft.Text(inc_item))
+
         def certify_task(e: ft.Event[ft.Button]):
             extension_list.controls=[]
             result = CertifyMaker(input_path.value, input_fileName.value).process()
-            for item in result:
-                ext = str(item.get("extension")).upper()
-                inc_item = f"{ext } = {item.get("conteo")}"
-                extension_list.controls.append(ft.Text(inc_item))
+            __get_file_list(result)
 
         def clean_components(e: ft.Event[ft.Button]):
             state_totalStorage.value="-"
@@ -35,6 +39,7 @@ class Interface:
 
         # Global Variables
         font_label = 16
+        font_big_label = 18
 
         # Status Column
         label_status = create_label("Estado actual:", font_label)
@@ -53,11 +58,11 @@ class Interface:
 
         # Output Column
         label_totalStorage = create_label("Espacio Total:", font_label)
-        state_totalStorage = create_label("-", font_size=18)
+        state_totalStorage = create_label("-", font_big_label)
         label_usedStorage = create_label("Espacio Utilizado:", font_label)
-        state_usedStorage = create_label("-", font_size=18)
+        state_usedStorage = create_label("-", font_big_label)
         label_freeStorage = create_label("Espacio Disponible:", font_label)
-        state_freeStorage = create_label("-", font_size=18)
+        state_freeStorage = create_label("-", font_big_label)
         label_extensionList = create_label("Lista de archivos y extensiones:", font_label)
         extension_list = ft.ListView(
             height=200,
@@ -69,7 +74,7 @@ class Interface:
 
         page.add(
             ft.Container(
-                border= ft.Border.all(1, ft.Colors.RED),
+                border= ft.Border.all(1, ft.Colors.BLACK),
                 padding=24,
                 expand=True,
                 content=
@@ -81,20 +86,25 @@ class Interface:
                             tight=True,
                             controls=[
                                 ft.Column(
+                                    spacing=24,
                                     alignment=ft.MainAxisAlignment.START,
                                     intrinsic_width=True,
                                     tight=True,
                                     controls=[
                                         ft.Column(
                                             controls=[
-                                                label_path,
-                                                input_path
-                                            ]
-                                        ),
-                                        ft.Column(
-                                            controls=[
-                                                label_fileName,
-                                                input_fileName
+                                                ft.Column(
+                                                    controls=[
+                                                        label_path,
+                                                        input_path
+                                                    ]
+                                                ),
+                                                ft.Column(
+                                                    controls=[
+                                                        label_fileName,
+                                                        input_fileName
+                                                    ]
+                                                )
                                             ]
                                         ),
                                         ft.Row(
