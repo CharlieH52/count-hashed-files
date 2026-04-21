@@ -11,24 +11,27 @@ class CertifyMaker:
         self.path = target_path
         self.output_name = output_file_name
 
+    # Execute the main process to generate the HASH lines
     def __execute_process(self) -> str:
         try:
             input_command = ['powershell', f'Get-ChildItem -path "{self.path}" -recurse | Get-FileHash -algorithm SHA256 | convertto-json']
             output = subprocess.run(input_command, capture_output=True, text=True, encoding='utf-8', errors='replace')
             return output.stdout
-        except:
-            return ""
+        except subprocess.CalledProcessError.stderr as e:
+            return e
 
+    # Create a JSON file
     def __save_process(self, incoming_data: list[dict[str,Any]], path: str):
         with open(path, "w", encoding="utf-8") as file:
             json.dump(incoming_data, file, indent=4)
 
+    # Load a string with JSON format and use save_process to create the file
     def __save_json_file(self, data: str, file_name: str) -> None:
         try:
             output_data = json.loads(data)
         except json.JSONDecodeError as e:
             raise ValueError(f"JSON invalido: {e}")
-        
+        # Checks if the incoming string has a valid JSON format
         if not isinstance(output_data,list):
             output_data = [output_data]
 
@@ -37,21 +40,25 @@ class CertifyMaker:
         except PermissionError as e:
             raise PermissionError(f"No se pudo escribir el archivo: {file_name}") from e
 
+    # Load a JSON file
     def __load_json_file(self, file_path: str) -> list[dict[str,Any]]:
         try:
             with open(file_path, "r", encoding="utf-8") as file:
                 output = json.load(file)
+                # Checks if the incoming JSON is List[Dict] or Dict,
+                # always return a List[Dict]
                 if isinstance(output, list):
                     return output
                 else:
                     return [output]
-        except Exception as e:
+        except json.JSONDecodeError as e:
             print(e)
-
-    def __get_file_extension_list(self, json_data: list[dict[str,str]]) -> list[dict[str, int]]:
+            return []
+    
+    # Returns the file extension with the counted files per file extension
+    def __get_file_extension_list(self, json_data: list[dict[str,Any]]) -> list[dict[str,int]]:
         data_file = json_data
         conteos = defaultdict(int)
-        total = 0
         for file in data_file:
             path = file.get("Path")
             if not path:
@@ -61,9 +68,6 @@ class CertifyMaker:
             if match:
                 extension = match.group(1)
                 conteos[extension] += 1
-                total += 1
-
-        print(f"Archivos totales: {total}")
 
         return [
             {"extension": ext, "conteo": count}
