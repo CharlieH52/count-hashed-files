@@ -8,17 +8,46 @@ from collections import defaultdict
 class CertifyMaker:
     def __init__(self, target_path: str, output_file_name: str) -> None:
         self.working_path = os.path.join(os.getcwd(), "Certificaciones")
+        self.saved_file_path = os.path.join(self.working_path, f"{output_file_name}.json")
         self.path = target_path
-        self.output_name = output_file_name
+        self.output_json = self.__execute_process()
+        self.__save_json_file(self.output_json, self.saved_file_path)
+
+        self.current_data = self.__load_json_file(self.saved_file_path)
 
     # Execute the main process to generate the HASH lines
     def __execute_process(self) -> str:
         try:
-            input_command = ['powershell', f'Get-ChildItem -path "{self.path}" -recurse | Get-FileHash -algorithm SHA256 | convertto-json']
-            output = subprocess.run(input_command, capture_output=True, text=True, encoding='utf-8', errors='replace')
-            return output.stdout
-        except subprocess.CalledProcessError.stderr as e:
-            return e
+            input_command = [
+                "powershell",
+                "-NoProfile",
+                "-Command",
+                f"""
+                [Console]::OutputEncoding = [System.Text.Encoding]::UTF8;
+                $OutputEncoding = [System.Text.Encoding]::UTF8;
+                Get-ChildItem -Path '{self.path}' -Recurse |
+                Get-FileHash -Algorithm SHA256 |
+                ConvertTo-Json -Depth 3
+                """
+            ]
+            output = subprocess.run(input_command, capture_output=True)
+            raw = output.stdout
+            text = raw.decode("utf-8")
+            return text
+        except subprocess.SubprocessError as e:
+            print(e)
+
+    # Bites converter
+    def __get_size(self, size: int):
+        units = ["B", "KB", "MB", "GB", "TB"]
+        value = float(size)
+
+        for unit in units:
+            if value < 1024:
+                return round(value, 2), unit
+            value /= 1024
+
+        return round(value, 2), "PB"
 
     # Create a JSON file
     def __save_process(self, incoming_data: list[dict[str,Any]], path: str):
@@ -56,10 +85,9 @@ class CertifyMaker:
             return []
     
     # Returns the file extension with the counted files per file extension
-    def __get_file_extension_list(self, json_data: list[dict[str,Any]]) -> list[dict[str,int]]:
-        data_file = json_data
+    def get_file_extension_list(self) -> list[dict[str,int]]:
         conteos = defaultdict(int)
-        for file in data_file:
+        for file in self.current_data:
             path = file.get("Path")
             if not path:
                 continue
@@ -73,11 +101,17 @@ class CertifyMaker:
             {"extension": ext, "conteo": count}
             for ext, count in conteos.items()
         ]
-
-    def process(self) -> list[dict[str,Any]]:
-        file_name = os.path.join(self.working_path, f"{self.output_name}.json")
-        output_json = self.__execute_process()
-        self.__save_json_file(output_json, file_name)
-        data = self.__load_json_file(file_name)
-        count = self.__get_file_extension_list(data)
-        return count
+    
+    def get_used_space(self) -> str:
+        sum = 0
+        errrs = []
+        for file in self.current_data:
+            path = file.get("Path")
+            try:
+                file_obj = os.stat(path)
+                sum = sum + int(os.stat_result(file_obj).st_size)
+            except Exception as e:
+                errrs.append((path, str(e)))
+                print(errrs)
+        bar = self.__get_size(sum)
+        return f"{bar[0]} {bar[1]}"

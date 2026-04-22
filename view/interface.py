@@ -34,9 +34,11 @@ class Interface:
 
         def certify_task(e: ft.Event[ft.Button]):
             extension_list.controls=[]
-            result = CertifyMaker(input_path.value, input_fileName.value).process()
-            __get_file_list(result)
-            label_files.value = str(__get_total_files(result))
+            cm = CertifyMaker(input_path.value, input_fileName.value)
+            counted_files = cm.get_file_extension_list()
+            __get_file_list(counted_files)
+            state_usedStorage.value = cm.get_used_space()
+            label_files.value = str(__get_total_files(counted_files))
 
         def clean_components(e: ft.Event[ft.Button]):
             state_totalStorage.value="-"
