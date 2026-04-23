@@ -9,8 +9,8 @@ class Interface:
         page.window.maximizable = False
         page.window.resizable = False
         page.window.shadow = False
-        page.window.width = 826
-        page.window.height = 544
+        page.window.width = 808
+        page.window.height = 584
         page.title = "Certificador de archivos"
 
         def create_inputField(text_prev: str) -> ft.TextField:
@@ -38,22 +38,28 @@ class Interface:
             status_field.controls.append(text_obj)
 
         def certify_task(e: ft.Event[ft.Button]):
-            threading.Thread(target=sub_process).start()
+            threading.Thread(target=sub_process, daemon=True).start()
 
         def sub_process():
             extension_list.controls=[]
             __add_new_status("Iniciando certificacion")
-            __add_new_status("Proceso de lectura, esto puede tardar algunos minutos...")
 
+            __add_new_status("Proceso de lectura, esto puede tardar algunos minutos...")
             cm = CertifyMaker(input_path.value, input_fileName.value)
             counted_files = cm.get_file_extension_list()
+            page.update()
             
             __add_new_status("Generando conteos")
             __get_file_list(counted_files)
             label_files.value = str(__get_total_files(counted_files))
+            page.update()
 
             __add_new_status("Calculando tamaños de informacion")
             state_usedStorage.value = cm.get_used_space()
+            page.update()
+
+            __add_new_status("Certificacion completada")
+            page.update()
 
         def clean_components(e: ft.Event[ft.Button]):
             state_totalStorage.value="-"
@@ -63,6 +69,7 @@ class Interface:
             input_path.value=""
             input_fileName.value=""
             extension_list.controls=[]
+            status_field.controls=[]
 
         # Global Variables
         font_label = 16
@@ -74,7 +81,7 @@ class Interface:
         # Status Column
         label_status = create_label("Estado actual:", font_label)
         status_field = ft.ListView(
-            height=72,
+            height=96,
             padding=inner_padding,
             controls=[]
         )
