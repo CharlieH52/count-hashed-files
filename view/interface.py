@@ -1,5 +1,6 @@
 from service.generate import CertifyMaker
 from typing import Any
+import threading
 import flet as ft
 
 class Interface:
@@ -32,13 +33,27 @@ class Interface:
                 inc_item = f"{ext} = {item.get("conteo")}"
                 extension_list.controls.append(ft.Text(inc_item))
 
+        def __add_new_status(message: str):
+            text_obj = ft.Text(value=message)
+            status_field.controls.append(text_obj)
+
         def certify_task(e: ft.Event[ft.Button]):
+            threading.Thread(target=sub_process).start()
+
+        def sub_process():
             extension_list.controls=[]
+            __add_new_status("Iniciando certificacion")
+            __add_new_status("Proceso de lectura, esto puede tardar algunos minutos...")
+
             cm = CertifyMaker(input_path.value, input_fileName.value)
             counted_files = cm.get_file_extension_list()
+            
+            __add_new_status("Generando conteos")
             __get_file_list(counted_files)
-            state_usedStorage.value = cm.get_used_space()
             label_files.value = str(__get_total_files(counted_files))
+
+            __add_new_status("Calculando tamaños de informacion")
+            state_usedStorage.value = cm.get_used_space()
 
         def clean_components(e: ft.Event[ft.Button]):
             state_totalStorage.value="-"
@@ -53,11 +68,14 @@ class Interface:
         font_label = 16
         font_big_label = 18
         font_count_label = 24
+        inner_padding = 16
+        block_spacing = 24
 
         # Status Column
         label_status = create_label("Estado actual:", font_label)
         status_field = ft.ListView(
             height=72,
+            padding=inner_padding,
             controls=[]
         )
 
@@ -89,19 +107,19 @@ class Interface:
 
         page.add(
             ft.Container(
-                border= ft.Border.all(1, ft.Colors.BLACK),
-                padding=24,
+                border=ft.Border.all(1,ft.Colors.BLACK),
+                padding=inner_padding,
                 expand=True,
                 content=
                 ft.Column(
                     controls=[
                         ft.Row(
                             vertical_alignment=ft.CrossAxisAlignment.START,
-                            spacing=24,
+                            spacing=block_spacing,
                             tight=True,
                             controls=[
                                 ft.Column(
-                                    spacing=24,
+                                    spacing=block_spacing,
                                     alignment=ft.MainAxisAlignment.START,
                                     intrinsic_width=True,
                                     tight=True,
@@ -149,7 +167,7 @@ class Interface:
                                     controls=[
                                         ft.Row(
                                             # Space between storage stats and item list component
-                                            spacing=24,
+                                            spacing=block_spacing,
                                             controls=[
                                                 ft.Column(
                                                     controls=[
@@ -181,7 +199,7 @@ class Interface:
                                                     content=extension_list,
                                                     border=ft.Border.all(1, ft.Colors.BLACK),
                                                     expand=True,
-                                                    padding=16
+                                                    padding=inner_padding
                                                 )
                                             ],
                                             expand=True
@@ -192,8 +210,19 @@ class Interface:
                                     alignment=ft.MainAxisAlignment.START
                                 )
                             ]
+                        ),
+                        ft.Column(
+                            controls=[
+                                label_status,
+                                ft.Container(
+                                    border=ft.Border.all(1,ft.Colors.BLACK),
+                                    content=status_field
+                                )
+                            ],
+                            expand=True
                         )
                     ],
+                    spacing=block_spacing,
                     intrinsic_width=True,
                     tight=True,
                     alignment=ft.MainAxisAlignment.START
