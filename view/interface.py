@@ -1,4 +1,5 @@
 from service.generate import CertifyMaker
+from service.file_validator import Validator
 from typing import Any
 import threading
 import flet as ft
@@ -37,7 +38,31 @@ class Interface:
             text_obj = ft.Text(value=message)
             status_field.controls.append(text_obj)
 
+        def __validations() -> str | None:
+            path = input_path.value
+            file = input_fileName.value
+            val = Validator(path, file)
+            if len(path) < 2:
+                return "Escribe una ruta valida."
+            
+            if not val.valid_dir_path():
+                return "No se encontro el directorio especificado. Verifica que exista o que cuente con permisos de lectura."
+
+            if len(file) < 5:
+                return "El nombre del archivo es demasiado corto."
+            
+            if not val.valid_file_name():
+                return "El nombre del archivo ya existe. Intenta agregar un sufijo."
+            
+            return None
+
         def certify_task(e: ft.Event[ft.Button]):
+            error = __validations()
+
+            if error:
+                __add_new_status(error)
+                return
+            
             threading.Thread(target=sub_process, daemon=True).start()
 
         def sub_process():
@@ -88,7 +113,7 @@ class Interface:
 
         # Input Column
         label_path = create_label("Direccion raiz:", font_label)
-        input_path = create_inputField(text_prev="G:/")
+        input_path = create_inputField(text_prev="G:\\")
         label_fileName = create_label("Nombre de salida:", font_label)
         input_fileName = create_inputField(text_prev="CERTIFICACION-16_04_25")
         make_button = ft.Button(content="Certificar", style=ft.ButtonStyle(shape=ft.BeveledRectangleBorder()), on_click=certify_task)
