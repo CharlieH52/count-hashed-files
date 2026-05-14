@@ -9,6 +9,7 @@ from collections import defaultdict
 class CertifyMaker:
     def __init__(self, target_path: str, output_file_name: str) -> None:
         self.working_path = os.path.join(os.getcwd(), "Certificaciones")
+        self.__check_output_directory()
         self.saved_file_path = os.path.join(self.working_path, f"{output_file_name}.json")
         self.path = target_path
         self.mount_point = self.__get_parced_logic_drive(self.path)
@@ -140,3 +141,10 @@ class CertifyMaker:
                 print(errrs)
         bar = self.__get_size(sum)
         return f"{bar[0]} {bar[1]}"
+    
+    def __check_output_directory(self):
+        if not os.path.exists(self.working_path):
+            try:
+                os.mkdir(self.working_path)
+            except PermissionError as e:
+                print(e)
