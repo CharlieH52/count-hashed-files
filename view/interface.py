@@ -1,5 +1,6 @@
 from service.generate import CertifyMaker
 from service.file_validator import Validator
+import pythoncom
 from typing import Any
 import threading
 import flet as ft
@@ -70,6 +71,7 @@ class Interface:
             __add_new_status("Iniciando certificacion")
 
             __add_new_status("Proceso de lectura, esto puede tardar algunos minutos...")
+            pythoncom.CoInitialize()
             cm = CertifyMaker(input_path.value, input_fileName.value)
             counted_files = cm.get_file_extension_list()
             page.update()
@@ -81,10 +83,13 @@ class Interface:
 
             __add_new_status("Calculando tamaños de informacion")
             state_usedStorage.value = cm.get_used_space()
+            state_totalStorage.value = cm.get_logical_drive_size()
+            state_freeStorage.value = cm.get_logical_drive_free_space()
             page.update()
 
             __add_new_status("Certificacion completada")
             page.update()
+            pythoncom.CoUninitialize()
 
         def clean_components(e: ft.Event[ft.Button]):
             state_totalStorage.value="-"

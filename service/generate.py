@@ -2,6 +2,7 @@ import os
 import subprocess
 import json
 import re
+import wmi
 from typing import Any
 from collections import defaultdict
 
@@ -10,6 +11,9 @@ class CertifyMaker:
         self.working_path = os.path.join(os.getcwd(), "Certificaciones")
         self.saved_file_path = os.path.join(self.working_path, f"{output_file_name}.json")
         self.path = target_path
+        self.mount_point = self.__get_parced_logic_drive(self.path)
+        self.drive_size = self.__get_logical_drive_inf(self.mount_point)
+
         self.output_json = self.__execute_process()
         self.__save_json_file(self.output_json, self.saved_file_path)
 
@@ -48,6 +52,27 @@ class CertifyMaker:
             value /= 1024
 
         return round(value, 2), "PB"
+
+    # Parse the path to obtain the mount point
+    def __get_parced_logic_drive(self, path: str) -> str:
+        return path.split("\\")[0]
+
+    # Get full data from the mount device
+    def __get_logical_drive_inf(self, mount: str):
+        c = wmi.WMI()
+        for disk in c.Win32_LogicalDisk():
+            if disk.DeviceID == mount:
+                return disk
+
+    # Get max size from device
+    def get_logical_drive_size(self):
+        used_size = self.__get_size(int(self.drive_size.Size))
+        return f"{used_size[0]} {used_size[1]}"
+
+    # Get free space from device
+    def get_logical_drive_free_space(self):
+        free_size = self.__get_size(int(self.drive_size.FreeSpace))
+        return f"{free_size[0]} {free_size[1]}"
 
     # Create a JSON file
     def __save_process(self, incoming_data: list[dict[str,Any]], path: str):
