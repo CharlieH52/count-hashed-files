@@ -65,7 +65,7 @@ Por ultimo Pyinstaller es esencial para portabilizar el programa, pues es necesa
 Instalación con Poetry:
 > poetry install
 
-> ![IMPORTANT]  
+> [!IMPORTANT]  
 > Este proyecto está pensado para ser utilizado con POETRY, por lo que es muy recomendable utilizarlo. Puedes utilizar PIP y realizar la instalación de las librerías necesarias cambiando algunas cosas.
 
 Ejecución con Poetry:
@@ -80,7 +80,7 @@ El siguiente es un ejemplo del resultado esperado:
 </picture>
 <br/>
 
-> ![NOTE]  
+> [!NOTE]  
 > Puede existir el caso de que el dispositivo analizado no provea información respecto a su capacidad o propiedades fisicas, como en el siguiente caso.  
 
 <picture style="display: flex; justify-content: center;">
@@ -97,7 +97,7 @@ El siguiente es un ejemplo del resultado esperado:
 - Archivos y rutas con caracteres especiales o longitudes anormales en los nombres podrían omitirse.
 - Actualmente solo está disponible el algoritmo SHA256.
 
-> ![CAUTION]  
+> [!CAUTION]  
 > Puede haber una ligera discrepancia en el espacio ocupado mostrado por la aplicación y el marcado por las propiedades de Windows, ya que influyen factores como los mencionados en las limitaciones conocidas.
 
 <div style="display: flex; justify-content: center;">
