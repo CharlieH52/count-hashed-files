@@ -1,8 +1,6 @@
 from service.generate import CertifyMaker
 from service.file_validator import Validator
-import pythoncom
 from typing import Any
-import threading
 import flet as ft
 
 class Interface:
@@ -20,6 +18,17 @@ class Interface:
             
         def create_label(label_text: str, font_size: int) -> ft.Text:
             return ft.Text(value=label_text, size=font_size)
+        
+        def create_modal(modal_title: str, modal_content: str) -> ft.AlertDialog:
+            return ft.AlertDialog(
+                modal=True,
+                title=create_label(modal_title, font_label),
+                content=create_label(modal_content, font_label),
+                actions=[
+                    ft.TextButton("Ok", on_click=lambda e: page.pop_dialog())
+                    ],
+                actions_alignment=ft.MainAxisAlignment.CENTER
+                )
 
         def __get_total_files(file_list_obj: list[dict[str,int]]) -> int:
             files = 0
@@ -38,6 +47,7 @@ class Interface:
         def __add_new_status(message: str):
             text_obj = ft.Text(value=message)
             status_field.controls.append(text_obj)
+            status_field.update()
 
         def __validations() -> str | None:
             path = input_path.value
@@ -64,32 +74,31 @@ class Interface:
                 __add_new_status(error)
                 return
             
-            threading.Thread(target=sub_process, daemon=True).start()
+            sub_process()
 
         def sub_process():
+            state_modal = create_modal("Mensaje de estado", "Certificacion completada")
+
             extension_list.controls=[]
             __add_new_status("Iniciando certificacion")
 
             __add_new_status("Proceso de lectura, esto puede tardar algunos minutos...")
-            pythoncom.CoInitialize()
             cm = CertifyMaker(input_path.value, input_fileName.value)
             counted_files = cm.get_file_extension_list()
-            page.update()
             
             __add_new_status("Generando conteos")
             __get_file_list(counted_files)
             label_files.value = str(__get_total_files(counted_files))
-            page.update()
 
             __add_new_status("Calculando tamaños de informacion")
             state_usedStorage.value = cm.get_used_space()
             state_totalStorage.value = cm.get_logical_drive_size()
             state_freeStorage.value = cm.get_logical_drive_free_space()
-            page.update()
 
             __add_new_status("Certificacion completada")
+
+            state_modal.open = True
             page.update()
-            pythoncom.CoUninitialize()
 
         def clean_components(e: ft.Event[ft.Button]):
             state_totalStorage.value="-"
@@ -98,8 +107,8 @@ class Interface:
             label_files.value = "-"
             input_path.value=""
             input_fileName.value=""
-            extension_list.controls=[]
-            status_field.controls=[]
+            extension_list.controls.clear()
+            status_field.controls.clear()
 
         # Global Variables
         font_label = 16
