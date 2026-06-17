@@ -71,6 +71,12 @@ Instalación de dependencias:
 Ejecución:
 > `python .\main.py`
 
+Compilar programa:
+> `python .\build.py`
+
+> [!NOTE]  
+> Es posible cambiar algunos parametros dentro de `build.py` para ajustar la compilación a las necesidades que requieras.
+
 ### Resultado obtenido
 El siguiente es un ejemplo del resultado esperado:
 
