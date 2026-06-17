@@ -21,10 +21,13 @@ Es posible implementarla para otras organizaciones que tengan esta misma necesid
 ## Información técnica
 Este proyecto consiste en una aplicación de escritorio con interfaz gráfica para centralizar los datos solicitados con un flujo de trabajo sencillo.
 
-<picture style="display: flex; justify-content: center;">
-    <source srcset="./docs/screenshot-main_view.png" media="(max-width: 600px)"/>
-    <img style="max-width: 600px;" src="./docs/screenshot-main_view.png" alt="Captura de pantalla de la vista previa de la interfaz al iniciar el programa."/>
-</picture>
+<div align="center" style="width:100%">
+    <picture>
+        <source srcset="./docs/screenshot-main_view.png" media="(max-width: 600px)"/>
+        <img style="max-width: 600px;" src="./docs/screenshot-main_view.png" alt="Captura de pantalla de la vista previa de la interfaz al iniciar el programa."/>
+    </picture>
+</div>
+
 <br/>
 
 ### Tecnologías utilizadas
@@ -51,10 +54,13 @@ Para la entrega de reportes utilicé un formato de salida en JSON, pues esto pue
 
 Por último, PyInstaller es esencial para portabilizar el programa, pues es necesario que sea más sencillo de implementar para el personal externo al área de Sistemas.
 
-<picture style="display: flex; justify-content: center;">
-    <source srcset="./docs/screenshot-output-example.png" media="(max-width: 600px)"/>
-    <img style="max-width: 600px;" src="./docs/screenshot-output-example.png" alt="Captura de pantalla de la salida resultante de una certificacion."/>
-</picture>
+<div align="center" style="width:100%">
+    <picture>
+        <source srcset="./docs/screenshot-output-example.png" media="(max-width: 600px)"/>
+        <img style="max-width: 600px;" src="./docs/screenshot-output-example.png" alt="Captura de pantalla de la salida resultante de una certificacion."/>
+    </picture>
+</div>
+
 <br/>
 
 Por ultimo Pyinstaller es esencial para portabilizar el programa, pues es necesario que sea más sencillo de implementar para el personal externo al área de Sistemas.
@@ -80,21 +86,24 @@ Compilar programa:
 ### Resultado obtenido
 El siguiente es un ejemplo del resultado esperado:
 
-<p align="center">
+<div align="center" style="width:100%">
     <source srcset="./docs/screenshot-output-view-example.png" media="(max-width: 600px)"/>
     <img style="max-width: 600px;" src="./docs/screenshot-output-view-example.png" alt="Captura de pantalla del resultado obtenido en la interfaz de la aplicación."/>
-</p>
+</div>
+
 <br/>
 
 > [!NOTE]  
 > Puede existir el caso de que el dispositivo analizado no provea información respecto a su capacidad o propiedades fisicas, como en el siguiente caso.  
-<p align="center">
+
+<div align="center" style="width:100%">
     <picture>
         <source srcset="./docs/screenshot-cd_case.png" media="(max-width: 600px)"/>
         <img style="max-width: 600px;" src="./docs/screenshot-cd_case.png" alt="Captura de pantalla del resultado obtenido de un CD antiguo de Windows NT Original."/>
     </picture>
-    <br/>
-</p>
+</div>
+
+<br/>
 
 > Eso sucede principalmente en unidades de CD o DVD, pues dependiendo del fabricante, la antigüedad, entre otros factores como codificación de los archivos y formato de la unidad.
 
@@ -104,19 +113,22 @@ El siguiente es un ejemplo del resultado esperado:
 - Archivos y rutas con caracteres especiales o longitudes anormales en los nombres podrían omitirse.
 - Actualmente solo está disponible el algoritmo `SHA256`.
 
-<p align="center">
-    <picture style="display: flex; justify-content: center;">
-        <source srcset="./docs/screenshot-output-view-test.png" media="(max-width: 400px)"/>
-        <img style="max-width: 400px;" src="./docs/screenshot-output-view-test.png" alt="Captura de pantalla que contrasta el resultado de la aplicación con el mostrado por Windows."/>
-    </picture>
-</p>
+<table style="width:100%">
+  <tr>
+    <td align="center">
+        <picture>
+            <source srcset="./docs/screenshot-output-view-test.png" media="(max-width: 400px)"/>
+            <img style="max-width: 400px;" src="./docs/screenshot-output-view-test.png" alt="Captura de pantalla que contrasta el resultado de la aplicación con el mostrado por Windows."/>
+        </picture>
+    </td>
+    <td align="center">
+        <picture>
+            <source srcset="./docs/windows-info.png" media="(max-width: 240px)"/>
+            <img style="max-width: 240px;" src="./docs/screenshot-windows-info.png" alt="Captura de pantalla del las propiedades mostradas por Windows."/>
+        </picture>
+    </td>
+  </tr>
+</table>
 
 > [!CAUTION]  
 > Puede haber una ligera discrepancia en el espacio ocupado mostrado por la aplicación y el marcado por las propiedades de Windows, ya que influyen factores como los mencionados en las limitaciones conocidas.
-
-<p align="center">
-    <picture>
-        <source srcset="./docs/windows-info.png" media="(max-width: 240px)"/>
-        <img style="max-width: 240px;" src="./docs/screenshot-windows-info.png" alt="Captura de pantalla del las propiedades mostradas por Windows."/>
-    </picture>
-</p>
