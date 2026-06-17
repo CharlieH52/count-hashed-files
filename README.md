@@ -5,7 +5,7 @@ Analiza la ruta especificada e itera sobre los archivos contenidos para generar 
 ### Contexto
 Anteriormente un **órgano auditor** solía solicitar archivos expedidos por la organización para la que he trabajado, archivos que se envían aún en unidades extraíbles como USB, CD o DVD.
 
-Estos archivos se solían enviar sin más. En la actualidad, este y otros órganos encargados de realizar auditorías han comenzado a solicitar respaldos digitales sobre el contenido de las unidades entregadas. Es por ello que se han comenzado a utilizar las certificaciones mediante huella hash; en nuestro caso particular se solicitan mediante el algoritmo SHA256 junto con los datos mencionados en el primer párrafo. Esto con la finalidad de asegurar y mantener la integridad de la información que se entrega desde la organización.
+Estos archivos se solían enviar sin más. En la actualidad, este y otros órganos encargados de realizar auditorías han comenzado a solicitar respaldos digitales sobre el contenido de las unidades entregadas. Es por ello que se han comenzado a utilizar las certificaciones mediante huella hash; en nuestro caso particular se solicitan mediante el algoritmo `SHA256` junto con los datos mencionados en el primer párrafo. Esto con la finalidad de asegurar y mantener la integridad de la información que se entrega desde la organización.
 
 ### Justificación
 El proceso planteado por el órgano en turno consistía en una serie de pasos sistemáticos y varias aplicaciones libres de por medio muy sencillas. Decidí crear una herramienta centralizada que realizara exactamente lo que se solicita con una interfaz sencilla y muy directa, para así eficientar todo el proceso, el cual cada día es más solicitado en mi área de Sistemas.
@@ -34,7 +34,7 @@ Este proyecto consiste en una aplicación de escritorio con interfaz gráfica pa
 - PyInstaller, librería para crear el ejecutable empaquetado.
 
 ### Características
-- Generación de hashes SHA256.
+- Generación de hashes `SHA256`.
 - Conteo total de archivos.
 - Estadísticas por extensión.
 - Cálculo de espacio utilizado.
@@ -62,32 +62,39 @@ Por ultimo Pyinstaller es esencial para portabilizar el programa, pues es necesa
 ## Flujo de trabajo
 
 ### Instalación
-Instalación con Poetry:
-> poetry install
+Preparar entorno virtual:
+> `python -m venv venv`
 
-> [!IMPORTANT]  
-> Este proyecto está pensado para ser utilizado con POETRY, por lo que es muy recomendable utilizarlo. Puedes utilizar PIP y realizar la instalación de las librerías necesarias cambiando algunas cosas.
+Instalación de dependencias:
+> `pip install -r requirements.txt`
 
-Ejecución con Poetry:
-> poetry run python .\main.py
+Ejecución:
+> `python .\main.py`
+
+Compilar programa:
+> `python .\build.py`
+
+> [!NOTE]  
+> Es posible cambiar algunos parametros dentro de `build.py` para ajustar la compilación a las necesidades que requieras.
 
 ### Resultado obtenido
 El siguiente es un ejemplo del resultado esperado:
 
-<picture style="display: flex; justify-content: center;">
+<p align="center">
     <source srcset="./docs/screenshot-output-view-example.png" media="(max-width: 600px)"/>
     <img style="max-width: 600px;" src="./docs/screenshot-output-view-example.png" alt="Captura de pantalla del resultado obtenido en la interfaz de la aplicación."/>
-</picture>
+</p>
 <br/>
 
 > [!NOTE]  
 > Puede existir el caso de que el dispositivo analizado no provea información respecto a su capacidad o propiedades fisicas, como en el siguiente caso.  
-
-<picture style="display: flex; justify-content: center;">
-    <source srcset="./docs/screenshot-cd_case.png" media="(max-width: 600px)"/>
-    <img style="max-width: 600px;" src="./docs/screenshot-cd_case.png" alt="Captura de pantalla del resultado obtenido de un CD antiguo de Windows NT Original."/>
-</picture>
-<br/>
+<p align="center">
+    <picture>
+        <source srcset="./docs/screenshot-cd_case.png" media="(max-width: 600px)"/>
+        <img style="max-width: 600px;" src="./docs/screenshot-cd_case.png" alt="Captura de pantalla del resultado obtenido de un CD antiguo de Windows NT Original."/>
+    </picture>
+    <br/>
+</p>
 
 > Eso sucede principalmente en unidades de CD o DVD, pues dependiendo del fabricante, la antigüedad, entre otros factores como codificación de los archivos y formato de la unidad.
 
@@ -95,18 +102,21 @@ El siguiente es un ejemplo del resultado esperado:
 - El tiempo que demora el análisis depende principalmente del tamaño de la muestra y la velocidad de lectura de la unidad.
 - Los archivos bloqueados por el sistema podrían omitirse.
 - Archivos y rutas con caracteres especiales o longitudes anormales en los nombres podrían omitirse.
-- Actualmente solo está disponible el algoritmo SHA256.
+- Actualmente solo está disponible el algoritmo `SHA256`.
 
-> [!CAUTION]  
-> Puede haber una ligera discrepancia en el espacio ocupado mostrado por la aplicación y el marcado por las propiedades de Windows, ya que influyen factores como los mencionados en las limitaciones conocidas.
-
-<div style="display: flex; justify-content: center;">
-    <picture style="display: flex; justify-content: center;">
-        <source srcset="./docs/windows-info.png" media="(max-width: 240px)"/>
-        <img style="max-width: 240px;" src="./docs/screenshot-windows-info.png" alt="Captura de pantalla del las propiedades mostradas por Windows."/>
-    </picture>
+<p align="center">
     <picture style="display: flex; justify-content: center;">
         <source srcset="./docs/screenshot-output-view-test.png" media="(max-width: 400px)"/>
         <img style="max-width: 400px;" src="./docs/screenshot-output-view-test.png" alt="Captura de pantalla que contrasta el resultado de la aplicación con el mostrado por Windows."/>
     </picture>
-</div>
+</p>
+
+> [!CAUTION]  
+> Puede haber una ligera discrepancia en el espacio ocupado mostrado por la aplicación y el marcado por las propiedades de Windows, ya que influyen factores como los mencionados en las limitaciones conocidas.
+
+<p align="center">
+    <picture>
+        <source srcset="./docs/windows-info.png" media="(max-width: 240px)"/>
+        <img style="max-width: 240px;" src="./docs/screenshot-windows-info.png" alt="Captura de pantalla del las propiedades mostradas por Windows."/>
+    </picture>
+</p>
