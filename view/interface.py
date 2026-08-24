@@ -180,6 +180,11 @@ class Interface:
                 else:
                     __add_new_status("Almacenamiento JSON desactivado según configuración.")
 
+                if config.SAVE_SQLITE_CERTIFICATIONS:
+                    __add_new_status(f"Certificación registrada en SQLite: Certificaciones/{config.SQLITE_DB_NAME}")
+                else:
+                    __add_new_status("Almacenamiento SQLite desactivado según configuración.")
+
                 if cm.errors_log:
                     __add_new_status(f"Advertencia: {len(cm.errors_log)} archivo(s) no pudieron ser leídos.")
 
