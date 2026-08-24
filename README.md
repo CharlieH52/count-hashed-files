@@ -1,5 +1,5 @@
 # Certificador de archivos
-Analiza la ruta especificada e itera sobre los archivos contenidos para generar un registro de los archivos con su respectiva huella hash hecha con SHA256. Integra opciones como conteo total de archivos analizados, espacio total utilizado por estos, listado de extensiones y conteo por extensión, además de proveer datos sobre la unidad analizada (capacidad total, espacio ocupado por los archivos y espacio libre en la unidad).
+Analiza la ruta especificada e itera sobre los archivos contenidos para generar un registro de los archivos con su respectiva huella hash hecha con SHA256. Integra opciones como conteo total de archivos analizados, espacio total utilizado por estos, listado de extensiones y conteo por extensión, además de proveer datos sobre la unidad analizada (capacidad total, espacio ocupado por los archivos y espacio libre en la unidad). Soporta almacenamiento estructurado en repositorio JSON, base de datos SQLite3 y exportación de resúmenes a texto plano (.txt).
 
 ## Detrás del proyecto
 ### Contexto
@@ -32,25 +32,28 @@ Este proyecto consiste en una aplicación de escritorio con interfaz gráfica pa
 
 ### Tecnologías utilizadas
 - Python, lenguaje utilizado.
-- Flet, librería de interfaces modernas.
-- WMI, librería utilizada para obtener objetos específicos de Windows.
-- PyInstaller, librería para crear el ejecutable empaquetado.
+- Flet, librería de interfaces modernas de escritorio.
+- SQLite3, motor de base de datos relacional para persistencia estructurada.
+- PyInstaller, herramienta para crear el ejecutable empaquetado.
 
 ### Características
-- Generación de hashes `SHA256`.
-- Conteo total de archivos.
-- Estadísticas por extensión.
-- Cálculo de espacio utilizado.
-- Cálculo del espacio disponible.
-- Interfaz gráfica sencilla.
-- Generación automatizada de reportes.
+- Generación nativa de hashes `SHA256` por bloques (streaming).
+- Conteo total de archivos auditados.
+- Estadísticas y clasificación por formato/extensión.
+- Cálculo del espacio total ocupado por los archivos analizados.
+- Detección de capacidad total, espacio utilizado y libre en la unidad de almacenamiento.
+- Nomenclatura automática con fecha (`nombre-DD_MM_YY`) y sufijos secuenciales anti-colisión.
+- Selector interactivo para explorar directorios en el equipo.
+- Barra de progreso reactiva en tiempo real.
+- Exportación manual de reportes resumidos a formato de texto plano (`.txt`).
+- Persistencia configurable en repositorios JSON y base de datos SQLite3.
 
 #### Justificación técnica
 Decidí utilizar Python, pues para la primera versión rápida de prueba de concepto realicé varias certificaciones con algunas líneas de código y una interfaz CLI.
 
-Una vez terminadas las funciones principales implementé Flet para centralizar la información y volver más accesible la aplicación.
+Una vez terminadas las funciones principales implementé Flet para centralizar la información y volver más accesible la aplicación mediante una interfaz gráfica clara y moderna con soporte asíncrono.
 
-Para la entrega de reportes utilicé un formato de salida en JSON, pues esto puede ser extendible para otro tipo de lectores automatizados, implementación de APIs y facilita su importación en programas compatibles con este formato.
+Para la entrega de reportes utilicé un formato de salida en JSON, pues esto puede ser extendible para otro tipo de lectores automatizados, implementación de APIs y facilita su importación en programas compatibles con este formato. Asimismo, integré una base de datos en SQLite3 para almacenar el histórico relacional de auditorías y un servicio de exportación a texto plano (.txt) para la entrega inmediata y legible de los resúmenes.
 
 Por último, PyInstaller es esencial para portabilizar el programa, pues es necesario que sea más sencillo de implementar para el personal externo al área de Sistemas.
 
@@ -62,8 +65,6 @@ Por último, PyInstaller es esencial para portabilizar el programa, pues es nece
 </div>
 
 <br/>
-
-Por ultimo Pyinstaller es esencial para portabilizar el programa, pues es necesario que sea más sencillo de implementar para el personal externo al área de Sistemas.
 
 ## Flujo de trabajo
 
@@ -81,7 +82,7 @@ Compilar programa:
 > `python .\build.py`
 
 > [!NOTE]  
-> Es posible cambiar algunos parametros dentro de `build.py` para ajustar la compilación a las necesidades que requieras.
+> En el archivo `config.py` es posible activar o desactivar el guardado de certificaciones en JSON (`SAVE_JSON_CERTIFICATIONS`) y SQLite3 (`SAVE_SQLITE_CERTIFICATIONS`), además de ajustar parámetros de compilación en `build.py`.
 
 ### Resultado obtenido
 El siguiente es un ejemplo del resultado esperado:
@@ -109,23 +110,22 @@ El siguiente es un ejemplo del resultado esperado:
 
 ### Limitaciones conocidas
 - El tiempo que demora el análisis depende principalmente del tamaño de la muestra y la velocidad de lectura de la unidad.
-- Los archivos bloqueados por el sistema podrían omitirse.
-- Archivos y rutas con caracteres especiales o longitudes anormales en los nombres podrían omitirse.
-- Actualmente solo está disponible el algoritmo `SHA256`.
+- Los archivos bloqueados con permisos exclusivos del sistema operativo podrían omitirse.
+- Actualmente la certificación principal está enfocada en el estándar solicitado por auditoría con el algoritmo `SHA256`.
 
 <table style="width:100%; border:none;">
   <tr>
     <td align="center">
-        <picture>
-            <source srcset="./docs/screenshot-output-view-test.png" media="(max-width: 400px)"/>
-            <img style="max-width: 400px;" src="./docs/screenshot-output-view-test.png" alt="Captura de pantalla que contrasta el resultado de la aplicación con el mostrado por Windows."/>
-        </picture>
+      <picture>
+        <source srcset="./docs/screenshot-output-view-test.png" media="(max-width: 400px)"/>
+        <img style="max-width: 400px;" src="./docs/screenshot-output-view-test.png" alt="Captura de pantalla que contrasta el resultado de la aplicación con el mostrado por Windows."/>
+      </picture>
     </td>
     <td align="center">
-        <picture>
-            <source srcset="./docs/windows-info.png" media="(max-width: 240px)"/>
-            <img style="max-width: 240px;" src="./docs/screenshot-windows-info.png" alt="Captura de pantalla del las propiedades mostradas por Windows."/>
-        </picture>
+      <picture>
+        <source srcset="./docs/windows-info.png" media="(max-width: 240px)"/>
+        <img style="max-width: 240px;" src="./docs/screenshot-windows-info.png" alt="Captura de pantalla del las propiedades mostradas por Windows."/>
+      </picture>
     </td>
   </tr>
 </table>
