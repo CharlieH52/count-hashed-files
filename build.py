@@ -6,7 +6,7 @@ def build_exe():
 
     BUILD_SECUENCE = [
         'pyinstaller',
-        '--noconsole',
+        '--windowed',
         '--onefile',
         '--clean',
         f'--name={output_name}',
