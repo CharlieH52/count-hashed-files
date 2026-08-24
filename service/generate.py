@@ -11,13 +11,19 @@ from collections import defaultdict
 
 import config
 from service.exporter import TextExporter
+from repository import (
+    CertificationRecord,
+    CertifiedFileRecord,
+    ExtensionSummaryRecord,
+    SQLiteRepository,
+)
 
 
 class CertifyMaker:
     """
     Motor de certificación de integridad de archivos.
     Calcula huellas criptográficas SHA-256 de forma nativa en Python,
-    extrae métricas de almacenamiento y permite exportar reportes en JSON y Texto.
+    extrae métricas de almacenamiento y permite persistir en JSON, SQLite3 y Texto.
     """
 
     def __init__(
@@ -25,11 +31,13 @@ class CertifyMaker:
         target_path: str,
         output_file_name: str,
         save_json: bool = config.SAVE_JSON_CERTIFICATIONS,
+        save_sqlite: bool = config.SAVE_SQLITE_CERTIFICATIONS,
         progress_callback: Callable[[int, int, str], None] | None = None
     ) -> None:
         self.target_path = os.path.abspath(target_path.strip().strip('"').strip("'"))
         self.output_file_name = output_file_name.strip()
         self.save_json = save_json
+        self.save_sqlite = save_sqlite
         self.progress_callback = progress_callback
 
         self.working_path = os.path.join(os.getcwd(), config.OUTPUT_DIRECTORY)
@@ -38,7 +46,7 @@ class CertifyMaker:
         self.saved_json_path = os.path.join(self.working_path, f"{self.output_file_name}.json")
         self.saved_txt_path = os.path.join(self.working_path, f"{self.output_file_name}.txt")
 
-        # Métricas de unidad (mediante llamadas nativas libres de fugas COM)
+        # Métricas de unidad
         self.mount_point = self.__get_mount_point(self.target_path)
         self.drive_total_bytes, self.drive_free_bytes = self.__get_drive_storage_info(
             self.target_path, self.mount_point
@@ -46,6 +54,7 @@ class CertifyMaker:
 
         # Estructuras de datos
         self.current_data: list[dict[str, Any]] = []
+        self.detailed_file_records: list[CertifiedFileRecord] = []
         self.extensions_counter: defaultdict[str, int] = defaultdict(int)
         self.total_analyzed_bytes: int = 0
         self.errors_log: list[tuple[str, str]] = []
@@ -56,6 +65,10 @@ class CertifyMaker:
         # Guardar en JSON según la constante booleana
         if self.save_json:
             self.__save_json_file(self.current_data, self.saved_json_path)
+
+        # Guardar en base de datos SQLite3 según la constante booleana
+        if self.save_sqlite:
+            self.__save_sqlite_database()
 
     def __check_output_directory(self) -> None:
         """Crea el directorio de salida si no existe."""
@@ -184,6 +197,16 @@ class CertifyMaker:
                     "Hash": file_hash,
                     "Path": file_path
                 })
+
+                # Registro para repositorio estructurado
+                self.detailed_file_records.append(
+                    CertifiedFileRecord(
+                        file_path=file_path,
+                        file_hash=file_hash,
+                        file_size_bytes=file_size,
+                        file_extension=clean_ext
+                    )
+                )
             except Exception as e:
                 self.errors_log.append((file_path, str(e)))
 
@@ -194,6 +217,35 @@ class CertifyMaker:
                 json.dump(data, f, indent=4, ensure_ascii=False)
         except Exception as e:
             self.errors_log.append((target_file_path, f"Error al guardar JSON: {e}"))
+
+    def __save_sqlite_database(self) -> None:
+        """Persiste la certificación y el detalle de archivos en la base de datos SQLite3."""
+        try:
+            repo = SQLiteRepository()
+            master_record = CertificationRecord(
+                certification_name=self.output_file_name,
+                target_path=self.target_path,
+                total_files=self.get_total_files_count(),
+                total_size_bytes=self.total_analyzed_bytes,
+                formatted_size=self.get_used_space(),
+                drive_total_space=self.get_logical_drive_size(),
+                drive_used_space=self.get_logical_drive_used_space(),
+                drive_free_space=self.get_logical_drive_free_space(),
+                hash_algorithm=config.DEFAULT_HASH_ALGORITHM
+            )
+
+            extensions_records = [
+                ExtensionSummaryRecord(extension=ext, file_count=count)
+                for ext, count in self.extensions_counter.items()
+            ]
+
+            repo.save_certification(
+                certification=master_record,
+                files=self.detailed_file_records,
+                extensions=extensions_records
+            )
+        except Exception as e:
+            self.errors_log.append((config.SQLITE_DB_NAME, f"Error al guardar en SQLite: {e}"))
 
     def export_text_report(self, target_txt_path: str | None = None) -> str:
         """
