@@ -113,7 +113,7 @@ El siguiente es un ejemplo del resultado esperado:
 - Archivos y rutas con caracteres especiales o longitudes anormales en los nombres podrían omitirse.
 - Actualmente solo está disponible el algoritmo `SHA256`.
 
-<table style="width:100%">
+<table style="width:100%; border:none;">
   <tr>
     <td align="center">
         <picture>
