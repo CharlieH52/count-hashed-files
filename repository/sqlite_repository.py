@@ -22,9 +22,7 @@ class SQLiteRepository:
 
     def __init__(self, db_path: Optional[str] = None) -> None:
         if db_path is None:
-            working_dir = os.path.join(os.getcwd(), config.OUTPUT_DIRECTORY)
-            os.makedirs(working_dir, exist_ok=True)
-            self.db_path = os.path.join(working_dir, config.SQLITE_DB_NAME)
+            self.db_path = os.path.join(os.getcwd(), config.SQLITE_DB_NAME)
         else:
             self.db_path = db_path
 
