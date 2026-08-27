@@ -27,6 +27,14 @@ class Interface:
         # Referencia al bucle de eventos principal para actualizaciones thread-safe
         main_loop = asyncio.get_running_loop()
 
+        async def __pick_folder_event(e: ft.ControlEvent):
+            """Abre el diálogo nativo y espera el resultado con await."""
+            directory_path = await ft.FilePicker().get_directory_path()
+            
+            if directory_path:
+                input_path.value = os.path.normpath(directory_path)
+                page.update()
+
         # Almacenamiento en memoria de la última certificación completada
         active_certify_maker: list[CertifyMaker | None] = [None]
 
@@ -99,29 +107,6 @@ class Interface:
 
             resolved_name = val.get_resolved_dated_filename()
             return None, resolved_name
-
-        def __open_native_folder_dialog(initial_dir: str = "") -> str:
-            try:
-                import tkinter as tk
-                from tkinter import filedialog
-                root = tk.Tk()
-                root.withdraw()
-                root.attributes("-topmost", True)
-                selected = filedialog.askdirectory(
-                    title="Seleccionar directorio raíz a certificar",
-                    initialdir=initial_dir if (initial_dir and os.path.exists(initial_dir)) else None
-                )
-                root.destroy()
-                return selected or ""
-            except Exception:
-                return ""
-
-        async def __pick_folder_event(e: ft.ControlEvent):
-            current_val = (input_path.value or "").strip()
-            selected_directory = await asyncio.to_thread(__open_native_folder_dialog, current_val)
-            if selected_directory:
-                input_path.value = os.path.normpath(selected_directory)
-                page.update()
 
         async def __certify_process(resolved_output_name: str):
             __disable_components(True)
